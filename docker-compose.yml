@@ -2,6 +2,7 @@ version: '3.5'
 services:
   parsedmarc:
     build: ./parsedmarc/
+    container_name: parsedmarc
     volumes:
       - ./files:/input:ro
       - ./output_files:/output
@@ -12,14 +13,36 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: parsedmarc-elasticsearch
     environment:
       - discovery.type=single-node
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+  
 
   grafana:
     build: ./grafana/
+    container_name: parsedmarc_grafana
     ports:
       - 3000:3000
     user: root
     environment:
       GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-worldmap-panel
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+  
+volumes:
+  esdata:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./esdata
+
+  grafana-storage:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./grafana-storage
