@@ -8,17 +8,13 @@ Analyse and visualize DMARC results using open-source tools.
 
 ## Pre-requisites
 
-Deeztek dmarc-visualizer requires that you have a fully updated Ubuntu 18.04 (also tested successfully on Ubuntu 20.04) machine with Docker and Docker Compose. You can easily install docker and docker-compose by following the instructions at [https://github.com/deeztek/deeztek-docker](https://github.com/deeztek/deeztek-docker).
+Deeztek dmarc-visualizer requires that you have a fully updated Ubuntu 20.04 Server machine with Docker and Docker Compose. You can easily install docker and docker-compose by following the instructions at [https://github.com/deeztek/deeztek-docker](https://github.com/deeztek/deeztek-docker).
 
-
-Deeztek dmarc-visualizer assumes you will be processing DMARC reports from an IMAP account, so before installation, you must ensure you have the following:
-
-- IMAP e-mail account Server Hostname
-- IMAP e-mail account Username
-- IMAP e-mail account Password
-
-If you are planning on using Maxmind Geolocation data, you must ensure you have already created a Maxmind account which is now a requirement in order to download the GeoIP2 Country Database.
 ## Installation
+
+Change to the /opt directory:
+
+` cd /opt`
 
 Git clone the Deeztek dmarc-visualizer repository:
 
@@ -34,8 +30,8 @@ Edit the **parsedmarc/parsedmarc.ini** file:
 
 `vi parsedmarc/parsedmarc.ini`
 
-Under the **[imap]** section, substitute **imap.domain.tld**, **imap_username** and **imap_password** fields with your IMAP hostname, username and password respectively:
-
+## Parsing DMARC Reports from IMAP Account
+If you will be processing DMARC reports from an IMAP account substitute **imap.domain.tld**, **imap_username** and **imap_password** fields with your IMAP hostname, username and password respectively under the **[imap]** section:
 ```
 [imap]
 host = imap.domain.tld
@@ -43,8 +39,11 @@ user = imap_username
 password = imap_password
 watch = True
 ```
+## Parsing DMARC Reports from ZIP files
+If you will be processing DMARC reports from ZIP files, remove the **[imap]** section and everything below it and copy the ZIP files to the **/opt/dmarc-visualizer/files** directory. 
 
-If you wish to use Maxmind Geoloation data, ensure you copy the GeoIP2 Country Database (**GeoLite2-Country.mmdb**) under the **parsedmarc/** directory (same path as the parsedmarc.ini file) and uncomment the following line in the **parsedmarc/Dockerfile** file:
+## Maxmind Geolocation Data
+If you are planning on using Maxmind Geolocation data, you must ensure you have already created a Maxmind account which is now a requirement in order to download the GeoIP2 Country Database and then copy the GeoIP2 Country Database (**GeoLite2-Country.mmdb**) under the **parsedmarc/** directory (same path as the parsedmarc.ini file) and uncomment the following line in the **parsedmarc/Dockerfile** file:
 
 `#COPY GeoLite2-Country.mmdb /usr/share/GeoIP/GeoLite2-Country.mmdb`
 
