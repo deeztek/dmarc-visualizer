@@ -6,31 +6,52 @@ services:
     volumes:
       - ./files:/input:ro
       - ./output_files:/output
-    command: parsedmarc -c /parsedmarc.ini /input/*
+    command: parsedmarc -c /parsedmarc.ini /input/* --debug
     depends_on:
       - elasticsearch
-    restart: on-failure
+    restart: always
+    logging:
+      options:
+        max-size: 10m
+        max-file: "5"
+
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     container_name: parsedmarc-elasticsearch
     environment:
       - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms750m -Xmx750m
     volumes:
       - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    restart: always
+    logging:
+      options:
+        max-size: 10m
+        max-file: "5"
+
   
 
   grafana:
     build: ./grafana/
     container_name: parsedmarc_grafana
+    logging:
+      options:
+        max-size: 10m
+        max-file: "5"
+
     ports:
       - 3000:3000
+    restart: always
     user: root
     environment:
       GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-worldmap-panel
-      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
     volumes:
       - grafana-storage:/var/lib/grafana
+
   
 volumes:
   esdata:
